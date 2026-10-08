@@ -16,9 +16,14 @@ const rooms = {};
 io.on("connection", (socket) => {
   console.log("New client connected:", socket.id);
 
-  socket.on("joinRoom", ({ roomId, playerName, gender, budget }) => {
+  socket.on("joinRoom", ({ roomId, playerName, gender, duration, budget }) => {
     //const room = rooms[roomId] || { players: [], timer: null, countdown: 300 };
-    const room = rooms[roomId] || { players: [], timer: null, countdown: 120 }; // 2 minutes for testing
+    //const room = rooms[roomId] || { players: [], timer: null, countdown: 120 }; // 2 minutes for testing
+    const room = rooms[roomId] || {
+      players: [],
+      timer: null,
+      countdown: duration || 120,
+    }; // Default to 2 minutes if duration not provided
 
     if (room.players.length >= 2) {
       socket.emit("roomFull", {
