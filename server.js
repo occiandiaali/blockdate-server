@@ -90,19 +90,29 @@ io.on("connection", (socket) => {
 
   // Spin-wheel feature
   // Sync Wheel of Fortune spin across players
-  socket.on("spinWheel", ({ roomId }) => {
-    const room = rooms[roomId];
-    if (room) {
-      // Generate winning slice index (8 slices total: 0 to 7)
-      const winningIndex = Math.floor(Math.random() * 8);
-      // Broadcast spin command and result to all players in the room
-      io.to(roomId).emit("wheelSpun", {
-        spinnerId: socket.id,
-        winningIndex: winningIndex,
-        // Random full rotations (3 to 6 turns) + winning slice alignment
-        extraRotations: 3 + Math.floor(Math.random() * 3),
-      });
-    }
+  // socket.on("spinWheel", ({ roomId }) => {
+  //   const room = rooms[roomId];
+  //   if (room) {
+  //     // Generate winning slice index (8 slices total: 0 to 7)
+  //     const winningIndex = Math.floor(Math.random() * 8);
+  //     // Broadcast spin command and result to all players in the room
+  //     io.to(roomId).emit("wheelSpun", {
+  //       spinnerId: socket.id,
+  //       winningIndex: winningIndex,
+  //       // Random full rotations (3 to 6 turns) + winning slice alignment
+  //       extraRotations: 3 + Math.floor(Math.random() * 3),
+  //     });
+  //   }
+  // });
+  socket.on("spinWheel", ({ roomId, winningIndex }) => {
+    // If client didn't send winningIndex, server picks one
+    const targetIndex =
+      winningIndex !== undefined ? winningIndex : Math.floor(Math.random() * 8);
+
+    io.to(roomId).emit("wheelSpun", {
+      spinnerId: socket.id,
+      winningIndex: targetIndex,
+    });
   });
 
   // Relay chat & speech bubbles (typewriter effect)
