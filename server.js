@@ -79,12 +79,14 @@ io.on("connection", (socket) => {
   });
 
   // Real-time movement & transform relay
-  socket.on("playerMove", ({ roomId, transform }) => {
+  socket.on("playerMove", ({ roomId, transform, isMoving }) => {
     const room = rooms[roomId];
     if (room) {
       const p = room.players.find((player) => player.id === socket.id);
       if (p) p.transform = transform;
-      socket.to(roomId).emit("playerMoved", { id: socket.id, transform });
+      socket
+        .to(roomId)
+        .emit("playerMoved", { id: socket.id, transform, isMoving });
     }
   });
 
